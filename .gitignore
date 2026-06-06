@@ -1,0 +1,16 @@
+.DS_Store
+Thumbs.db
+
+# Do not commit local secrets or machine-specific config.
+.env
+.env.*
+*.pem
+*.key
+*.p12
+*.mobileprovision
+*.json
+*.yaml
+*.yml
+!.github/workflows/*.yml
+!.github/workflows/*.yaml
+
