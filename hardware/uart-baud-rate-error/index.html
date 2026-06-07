@@ -1,0 +1,185 @@
+<!doctype html>
+<html lang="ja">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>UARTのボーレート誤差が通信に与える影響 - Instant Question Notes</title>
+    <meta name="description" content="UARTのボーレート誤差が通信に与える影響を、サンプリング位置、累積ずれ、許容誤差、対策から整理する">
+    <link rel="stylesheet" href="../../styles/site.css">
+  </head>
+  <body>
+    <header class="site-header compact">
+      <div class="container">
+        <p class="eyebrow"><a href="../../">Instant Question Notes</a> / Hardware</p>
+        <h1>UARTのボーレート誤差が通信に与える影響</h1>
+        <p class="lead">送信側と受信側の速度差は、1文字の中で少しずつ積み上がり、最後は別のビットを読ませる。</p>
+      </div>
+    </header>
+
+    <main class="container article">
+      <p class="note-meta">Created: 2026-06-07</p>
+
+      <section>
+        <h2>Overview</h2>
+        <p>UARTは、クロック線を持たない非同期シリアル通信です。送信側と受信側は、あらかじめ同じボーレート、データ長、パリティ、ストップビットを設定しておき、受信側はスタートビットのエッジをきっかけに内部タイマで各ビットの中央をサンプリングします。</p>
+        <p>そのため、送信側と受信側の実際のボーレートがずれていると、受信側のサンプリング位置が1ビットごとに少しずつずれます。ずれが大きくなると、隣のビットを読んだり、ストップビットを正しく読めずフレーミングエラーになったりします。</p>
+      </section>
+
+      <section>
+        <h2>なぜ誤差が問題になるか</h2>
+        <svg viewBox="0 0 760 360" role="img" aria-labelledby="uart-title uart-desc" width="100%">
+          <title id="uart-title">UARTのサンプリング位置がボーレート誤差でずれる様子</title>
+          <desc id="uart-desc">受信側のサンプリング点が、送信側のビット中央から少しずつ後ろへずれていく</desc>
+          <rect x="1" y="1" width="758" height="358" rx="8" fill="#fffdf7" stroke="#d8d0c2"></rect>
+          <text x="56" y="54" fill="#15201c" font-size="20" font-family="sans-serif">送信側のビット幅</text>
+          <g stroke="#d8d0c2" stroke-width="2">
+            <line x1="72" y1="86" x2="72" y2="238"></line>
+            <line x1="142" y1="86" x2="142" y2="238"></line>
+            <line x1="212" y1="86" x2="212" y2="238"></line>
+            <line x1="282" y1="86" x2="282" y2="238"></line>
+            <line x1="352" y1="86" x2="352" y2="238"></line>
+            <line x1="422" y1="86" x2="422" y2="238"></line>
+            <line x1="492" y1="86" x2="492" y2="238"></line>
+            <line x1="562" y1="86" x2="562" y2="238"></line>
+            <line x1="632" y1="86" x2="632" y2="238"></line>
+            <line x1="702" y1="86" x2="702" y2="238"></line>
+          </g>
+          <g fill="#f5f1e8" stroke="#15201c" stroke-width="2">
+            <rect x="72" y="100" width="70" height="64"></rect>
+            <rect x="142" y="100" width="70" height="64"></rect>
+            <rect x="212" y="100" width="70" height="64"></rect>
+            <rect x="282" y="100" width="70" height="64"></rect>
+            <rect x="352" y="100" width="70" height="64"></rect>
+            <rect x="422" y="100" width="70" height="64"></rect>
+            <rect x="492" y="100" width="70" height="64"></rect>
+            <rect x="562" y="100" width="70" height="64"></rect>
+            <rect x="632" y="100" width="70" height="64"></rect>
+          </g>
+          <g fill="#15201c" font-size="15" font-family="sans-serif" text-anchor="middle">
+            <text x="107" y="138">Start</text>
+            <text x="177" y="138">D0</text>
+            <text x="247" y="138">D1</text>
+            <text x="317" y="138">D2</text>
+            <text x="387" y="138">D3</text>
+            <text x="457" y="138">D4</text>
+            <text x="527" y="138">D5</text>
+            <text x="597" y="138">D6</text>
+            <text x="667" y="138">D7</text>
+          </g>
+          <g fill="#0f7b68">
+            <circle cx="107" cy="218" r="7"></circle>
+            <circle cx="181" cy="218" r="7"></circle>
+            <circle cx="255" cy="218" r="7"></circle>
+            <circle cx="329" cy="218" r="7"></circle>
+            <circle cx="403" cy="218" r="7"></circle>
+            <circle cx="477" cy="218" r="7"></circle>
+            <circle cx="551" cy="218" r="7"></circle>
+            <circle cx="625" cy="218" r="7"></circle>
+            <circle cx="699" cy="218" r="7"></circle>
+          </g>
+          <g stroke="#0f7b68" stroke-width="3" fill="none">
+            <path d="M107 204 V178"></path>
+            <path d="M181 204 V178"></path>
+            <path d="M255 204 V178"></path>
+            <path d="M329 204 V178"></path>
+            <path d="M403 204 V178"></path>
+            <path d="M477 204 V178"></path>
+            <path d="M551 204 V178"></path>
+            <path d="M625 204 V178"></path>
+            <path d="M699 204 V178"></path>
+          </g>
+          <text x="56" y="266" fill="#0a5c50" font-size="18" font-family="sans-serif">受信側のサンプリング点</text>
+          <text x="56" y="294" fill="#65706b" font-size="16" font-family="sans-serif">受信側が少し遅い例。後ろのビットほどサンプリング点が右へずれていく。</text>
+          <text x="56" y="320" fill="#65706b" font-size="16" font-family="sans-serif">ずれが半ビットに近づくと、隣のビットを読む危険が高くなる。</text>
+        </svg>
+      </section>
+
+      <section>
+        <h2>誤差は合計で見る</h2>
+        <p>重要なのは、片方だけの誤差ではなく、送信側と受信側の相対誤差です。送信側が+1.5%、受信側が-1.0%なら、互いの速度差は約2.5%になります。</p>
+        <pre><code>相対誤差の例
+送信側: 115200 bpsのつもりだが実際は +1.5%
+受信側: 115200 bpsのつもりだが実際は -1.0%
+合計のずれ: 約2.5%</code></pre>
+        <p>UARTはスタートビットで同期し直しますが、1文字の中では共通クロックがありません。そのため、1ビットごとの小さなずれが、データビット、パリティ、ストップビットへ進むにつれて累積します。</p>
+      </section>
+
+      <section>
+        <h2>どんな症状が出るか</h2>
+        <ul>
+          <li>文字化けする。たとえばログが読めない記号や別の文字になる。</li>
+          <li>たまにだけ壊れる。温度や電源電圧で内蔵RC発振器がずれると再現性が悪くなる。</li>
+          <li>フレーミングエラーが出る。ストップビットをHighとして読めない場合に起きやすい。</li>
+          <li>高ボーレートにした時だけ壊れる。速度が上がるほど1ビット時間が短くなり、タイミング余裕が減る。</li>
+          <li>長い連続データや特定のビットパターンで壊れやすく見える。</li>
+        </ul>
+      </section>
+
+      <section>
+        <h2>許容誤差の目安</h2>
+        <p>実務では、総合的な相対誤差を2%前後、条件によっては2〜3%以内に収めるように考えることが多いです。ただし、正確な許容値はUARTの実装、オーバーサンプリング方式、データ長、パリティ、ストップビット数、ノイズ、信号波形に依存します。</p>
+        <p>Microchipの資料では、UARTは専用クロック線を持たないため、送受信の合計誤差が大きいとデータがランダムに壊れる可能性があると説明されています。MicrochipのUART概要ページでは、デバイス間のボーレートはデータ損失を避けるために10%以内で一致させる必要があるとも説明されていますが、これはかなり広い説明なので、設計上は各デバイスのデータシートやアプリケーションノートに従うのが安全です。</p>
+      </section>
+
+      <section>
+        <h2>計算の考え方</h2>
+        <p>最悪ケースでは、1フレームの最後のサンプリング点までに、ずれが半ビットを超えないことがひとつの目安になります。8N1なら、スタートビット、8データビット、ストップビットで合計10ビット時間のフレームです。</p>
+        <pre><code>ざっくりした考え方
+1文字の最後までに許されるずれ: 約0.5ビット未満
+8N1の長さ: 約10ビット
+単純計算の上限: 0.5 / 10 = 5%
+
+実際の設計目安:
+サンプリング方式、初期同期誤差、ノイズ、波形のなまりを見込んで
+2〜3%以内を狙うことが多い</code></pre>
+        <p>この単純計算は理解用の近似です。実際のUART受信器は16倍や8倍のオーバーサンプリング、中央付近の多数決、スタートビット検出などを使うため、許容値は実装ごとに変わります。</p>
+      </section>
+
+      <section>
+        <h2>高ボーレートほど厳しい理由</h2>
+        <p>同じクロック源からボーレートを作る場合、分周器の丸め誤差があります。低いボーレートでは近い値を作れても、高いボーレートでは分周値が小さくなり、1カウントの差が大きな誤差になりやすいです。</p>
+        <p>さらに、高速になるほど配線容量、立ち上がり/立ち下がり時間、レベル変換IC、絶縁IC、RS-232/RS-485トランシーバの遅延や波形品質も効きます。ボーレート誤差だけでなく、サンプリング点付近で信号が十分に安定しているかも見ます。</p>
+      </section>
+
+      <section>
+        <h2>対策</h2>
+        <ol class="steps">
+          <li><span>実際のボーレート誤差を計算する</span>MCUのクロック周波数、UART分周設定、オーバーサンプリング設定から実ボーレートを求める。</li>
+          <li><span>送信側と受信側の合計誤差を見る</span>片方だけでなく、相手のクロック精度、温度ドリフト、発振器精度も足し合わせる。</li>
+          <li><span>水晶や高精度発振器を使う</span>内蔵RC発振器だけでは温度や電圧でずれやすい場合がある。</li>
+          <li><span>ボーレートを下げる</span>高速通信で余裕がない時は、速度を下げるだけで安定することがある。</li>
+          <li><span>オートボーレートを使う</span>対応UARTでは、既知パターンを受けて相手の速度に合わせる方法がある。</li>
+          <li><span>波形を測る</span>ロジックアナライザやオシロスコープで1ビット時間、立ち上がり、ノイズ、フレーミングエラーを確認する。</li>
+        </ol>
+      </section>
+
+      <section>
+        <h2>チェックリスト</h2>
+        <ul>
+          <li>両端の設定は同じか: ボーレート、データ長、パリティ、ストップビット。</li>
+          <li>MCUのクロック設定は意図通りか: PLL、分周、低消費電力モードで変わっていないか。</li>
+          <li>UART分周後の実ボーレート誤差は何%か。</li>
+          <li>相手側の誤差、発振器精度、温度範囲を含めて何%か。</li>
+          <li>ロジックアナライザで測ったビット幅は期待値に近いか。</li>
+          <li>高ボーレートだけで壊れるなら、ボーレートを下げると改善するか。</li>
+        </ul>
+      </section>
+
+      <section>
+        <h2>Summary</h2>
+        <p>UARTはクロック線を持たないため、送信側と受信側のボーレート誤差がそのままサンプリング位置のずれになります。ずれは1文字の中で累積し、隣のビットを読んだりストップビットを読めずフレーミングエラーになったりします。実務では相対誤差を小さく抑え、2〜3%以内を目安にしつつ、使うMCUやUART IPの仕様、クロック精度、温度範囲、波形品質を確認します。</p>
+      </section>
+
+      <section>
+        <h2>References</h2>
+        <ul>
+          <li><a href="https://onlinedocs.microchip.com/oxy/GUID-AE49E526-B7D4-4303-9402-2DE31CF372AD-en-US-2/GUID-ABC554FB-E5C5-4A66-8C64-695243B76E3B.html">Microchip - Baud Rate Tolerance</a></li>
+          <li><a href="https://www.microchip.com/en-us/products/microcontrollers-and-microprocessors/8-bit-mcus/core-independent-and-analog-peripherals/communication-connectivity-peripherals/uart-peripherals">Microchip - Universal Asynchronous Receiver and Transmitter Peripherals</a></li>
+          <li><a href="https://www.ti.com/video/6313217959112">Texas Instruments - UART protocol and error overview</a></li>
+          <li><a href="https://www.analog.com/en/resources/analog-dialogue/articles/2020/11/24/18/10/uart-a-hardware-communication-protocol.html">Analog Devices - UART: A Hardware Communication Protocol</a></li>
+          <li><a href="https://www.stmicroelectronics.com/resource/en/application_note/dm00327191.pdf">STMicroelectronics - AN4908: Getting started with USART</a></li>
+        </ul>
+      </section>
+    </main>
+  </body>
+</html>
