@@ -1,0 +1,140 @@
+<!doctype html>
+<html lang="ja">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>GitHub Pagesとは何か - Instant Question Notes</title>
+    <meta name="description" content="GitHub Pagesとは何かを、静的サイト、公開URL、GitHub Actionsとの関係から初心者向けに整理する">
+    <link rel="stylesheet" href="../../styles/site.css">
+  </head>
+  <body>
+    <header class="site-header compact">
+      <div class="container">
+        <p class="eyebrow"><a href="../../">Instant Question Notes</a> / Web</p>
+        <h1>GitHub Pagesとは何か</h1>
+        <p class="lead">GitHub上のファイルを、Webサイトとしてインターネットに公開できる仕組み。</p>
+      </div>
+    </header>
+
+    <main class="container article">
+      <p class="note-meta">Created: 2026-06-07</p>
+
+      <section>
+        <h2>Overview</h2>
+        <p>GitHub Pagesは、GitHubリポジトリに置いたHTML、CSS、JavaScript、画像などを、Webサイトとして公開するための機能です。個人サイト、プロジェクト紹介、ドキュメント、技術ノートの公開によく使われます。</p>
+        <p>このリポジトリのように、ビルド不要の静的HTMLを置いておけば、GitHub Pagesがそれを配信し、ブラウザからURLで読めるようにしてくれます。</p>
+      </section>
+
+      <section>
+        <h2>ざっくりした流れ</h2>
+        <svg viewBox="0 0 760 320" role="img" aria-labelledby="pages-title pages-desc" width="100%">
+          <title id="pages-title">GitHub PagesでHTMLが公開される流れ</title>
+          <desc id="pages-desc">ローカルでHTMLを作り、GitHubへpushし、GitHub PagesがWebサイトとして配信する</desc>
+          <rect x="1" y="1" width="758" height="318" rx="8" fill="#fffdf7" stroke="#d8d0c2"></rect>
+          <g fill="#f5f1e8" stroke="#15201c" stroke-width="3">
+            <rect x="54" y="92" width="150" height="112" rx="8"></rect>
+            <rect x="304" y="92" width="150" height="112" rx="8"></rect>
+            <rect x="554" y="92" width="150" height="112" rx="8"></rect>
+          </g>
+          <g fill="#15201c" font-size="18" font-family="sans-serif" text-anchor="middle">
+            <text x="129" y="132">local files</text>
+            <text x="129" y="164">HTML / CSS</text>
+            <text x="379" y="132">GitHub</text>
+            <text x="379" y="164">repository</text>
+            <text x="629" y="132">GitHub Pages</text>
+            <text x="629" y="164">public site</text>
+          </g>
+          <g stroke="#0f7b68" stroke-width="5" fill="none" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M214 148 H288"></path>
+            <path d="M276 136 L290 148 L276 160"></path>
+            <path d="M464 148 H538"></path>
+            <path d="M526 136 L540 148 L526 160"></path>
+          </g>
+          <g fill="#0a5c50" font-size="16" font-family="sans-serif" text-anchor="middle">
+            <text x="251" y="126">git push</text>
+            <text x="501" y="126">deploy</text>
+          </g>
+          <text x="54" y="250" fill="#65706b" font-size="16" font-family="sans-serif">リポジトリ内のファイルが、公開用URLから読めるWebサイトになる</text>
+        </svg>
+      </section>
+
+      <section>
+        <h2>何を公開できるか</h2>
+        <p>GitHub Pagesが得意なのは、静的サイトです。静的サイトとは、アクセスされた時にサーバー側でデータベース処理やログイン処理を動かさず、あらかじめ用意したファイルをそのまま返すサイトです。</p>
+        <ul>
+          <li>HTMLで書いたページ。</li>
+          <li>CSSで整えたデザイン。</li>
+          <li>JavaScriptで動くブラウザ内の処理。</li>
+          <li>画像、PDF、フォントなどの静的ファイル。</li>
+        </ul>
+      </section>
+
+      <section>
+        <h2>公開URLの考え方</h2>
+        <p>GitHub Pagesでは、リポジトリの種類や設定によってURLが決まります。プロジェクト用のサイトでは、一般的に次のような形になります。</p>
+        <pre><code>https://ユーザー名.github.io/リポジトリ名/</code></pre>
+        <p>このノート集なら、トップページはリポジトリ名までのURLで開き、個別ノートはその下のディレクトリとして開きます。</p>
+        <pre><code>https://harataira0301.github.io/instant-question-notes/
+https://harataira0301.github.io/instant-question-notes/web/github-pages/</code></pre>
+      </section>
+
+      <section>
+        <h2>GitHub Actionsとの関係</h2>
+        <p>GitHub Pagesは、公開するファイルの用意にGitHub Actionsを使えます。Actionsは、pushなどをきっかけに自動で処理を走らせるGitHubの仕組みです。</p>
+        <p>このリポジトリでは、`main`ブランチへpushされると、GitHub Actionsがリポジトリの中身をPages用の成果物としてアップロードし、GitHub Pagesへデプロイします。つまり、HTMLを追加してpushすると、少し待ってから公開サイトに反映されます。</p>
+      </section>
+
+      <section>
+        <h2>できること・苦手なこと</h2>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>観点</th>
+                <th>向いている</th>
+                <th>苦手</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <th>サイトの種類</th>
+                <td>技術ノート、ドキュメント、ポートフォリオ、製品紹介。</td>
+                <td>サーバー側でログイン、決済、DB更新を行うWebアプリ。</td>
+              </tr>
+              <tr>
+                <th>運用</th>
+                <td>Gitで履歴を残しながらページを更新する運用。</td>
+                <td>Gitに慣れていない人がブラウザだけで頻繁に編集する運用。</td>
+              </tr>
+              <tr>
+                <th>費用感</th>
+                <td>小さな静的サイトを手軽に公開したい場合。</td>
+                <td>大量アクセス、厳密なSLA、細かなサーバー制御が必要な場合。</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <section>
+        <h2>初心者向けの理解</h2>
+        <p>GitHubを「ファイルを置く場所」だとすると、GitHub Pagesは「そのファイルをWebサイトとして見せる係」です。HTMLファイルをリポジトリに置くだけでは、基本的にはコード置き場にあるファイルです。Pagesを有効にすると、そのファイルがブラウザで見られる公開ページになります。</p>
+        <p>ブログサービスのように記事編集画面が用意されているわけではありません。その代わり、ファイルを直接管理でき、変更履歴がGitに残り、静的なノートやドキュメントを軽く公開できます。</p>
+      </section>
+
+      <section>
+        <h2>Summary</h2>
+        <p>GitHub Pagesは、GitHubリポジトリの中身を静的Webサイトとして公開する機能です。HTML、CSS、JavaScript、画像のようなファイルを置いてpushすると、GitHub Actionsなどのデプロイ処理を経て、`github.io` のURLで読めるようになります。サーバー処理が必要なWebアプリには向きませんが、技術ノートやドキュメント公開には扱いやすい仕組みです。</p>
+      </section>
+
+      <section>
+        <h2>References</h2>
+        <ul>
+          <li><a href="https://docs.github.com/en/pages/getting-started-with-github-pages/about-github-pages">GitHub Docs - About GitHub Pages</a></li>
+          <li><a href="https://docs.github.com/en/pages/getting-started-with-github-pages/creating-a-github-pages-site">GitHub Docs - Creating a GitHub Pages site</a></li>
+          <li><a href="https://docs.github.com/en/pages/getting-started-with-github-pages/using-custom-workflows-with-github-pages">GitHub Docs - Using custom workflows with GitHub Pages</a></li>
+        </ul>
+      </section>
+    </main>
+  </body>
+</html>
