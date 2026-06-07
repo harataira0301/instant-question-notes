@@ -1,0 +1,180 @@
+<!doctype html>
+<html lang="ja">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>MOSFETのNch/Pchの使い分け - Instant Question Notes</title>
+    <meta name="description" content="MOSFETのNchとPchの使い分けを、ローサイドスイッチ、ハイサイドスイッチ、ゲート電圧の考え方から回路例つきで整理する">
+    <link rel="stylesheet" href="../../styles/site.css">
+  </head>
+  <body>
+    <header class="site-header compact">
+      <div class="container">
+        <p class="eyebrow"><a href="../../">Instant Question Notes</a> / Hardware</p>
+        <h1>MOSFETのNch/Pchの使い分け</h1>
+        <p class="lead">基本は「NchはGND側を切る」「Pchは電源側を切る」と覚えると入りやすい。</p>
+      </div>
+    </header>
+
+    <main class="container article">
+      <p class="note-meta">Created: 2026-06-07</p>
+
+      <section>
+        <h2>Overview</h2>
+        <p>MOSFETは、ゲート電圧で電流の通り道をオン/オフする半導体スイッチです。Nch MOSFETはゲートをソースより高くするとオンし、Pch MOSFETはゲートをソースより低くするとオンします。</p>
+        <p>初心者が最初に押さえるべき使い分けは、Nchはローサイドスイッチ、Pchはハイサイドスイッチに使いやすい、ということです。ただし、大電流や高効率が必要なハイサイドでは、専用ドライバを使ってNchを使うこともあります。</p>
+      </section>
+
+      <section>
+        <h2>結論</h2>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>使いたい場所</th>
+                <th>まず選ぶMOSFET</th>
+                <th>理由</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <th>GND側を切るローサイド</th>
+                <td>Nch</td>
+                <td>ソースをGNDに置けるので、マイコンのGPIOでゲートをHighにしやすい。低オン抵抗品も多い。</td>
+              </tr>
+              <tr>
+                <th>電源側を切るハイサイド</th>
+                <td>Pch</td>
+                <td>ソースを電源に置き、ゲートをGND側へ下げるだけでオンできる。回路が単純。</td>
+              </tr>
+              <tr>
+                <th>高効率なハイサイド</th>
+                <td>Nch + ゲートドライバ</td>
+                <td>Nchは低オン抵抗にしやすいが、ゲートを電源電圧より高く駆動する回路が必要になる。</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <section>
+        <h2>回路例1: Nchローサイドスイッチ</h2>
+        <p>LED、モータ、リレー、ヒータなどの負荷のGND側をNch MOSFETで切る回路です。マイコンのGPIOがHighになるとゲート-ソース間電圧Vgsが正になり、MOSFETがオンします。</p>
+        <svg viewBox="0 0 760 360" role="img" aria-labelledby="nch-low-title nch-low-desc" width="100%">
+          <title id="nch-low-title">Nch MOSFETのローサイドスイッチ回路</title>
+          <desc id="nch-low-desc">電源から負荷、Nch MOSFET、GNDへ電流が流れ、マイコンGPIOでゲートを駆動する</desc>
+          <rect x="1" y="1" width="758" height="358" rx="8" fill="#fffdf7" stroke="#d8d0c2"></rect>
+          <text x="80" y="54" fill="#15201c" font-size="20" font-family="sans-serif">+V</text>
+          <line x1="100" y1="66" x2="100" y2="104" stroke="#15201c" stroke-width="4"></line>
+          <rect x="62" y="104" width="76" height="76" rx="8" fill="#f5f1e8" stroke="#15201c" stroke-width="3"></rect>
+          <text x="100" y="150" fill="#15201c" font-size="18" font-family="sans-serif" text-anchor="middle">Load</text>
+          <line x1="100" y1="180" x2="100" y2="220" stroke="#15201c" stroke-width="4"></line>
+          <line x1="100" y1="220" x2="100" y2="270" stroke="#15201c" stroke-width="4"></line>
+          <line x1="82" y1="236" x2="118" y2="236" stroke="#0f7b68" stroke-width="4"></line>
+          <line x1="82" y1="256" x2="118" y2="256" stroke="#0f7b68" stroke-width="4"></line>
+          <line x1="58" y1="246" x2="78" y2="246" stroke="#0f7b68" stroke-width="4"></line>
+          <line x1="58" y1="206" x2="58" y2="286" stroke="#0f7b68" stroke-width="4"></line>
+          <text x="146" y="254" fill="#0a5c50" font-size="18" font-family="sans-serif">Nch MOSFET</text>
+          <line x1="100" y1="270" x2="100" y2="300" stroke="#15201c" stroke-width="4"></line>
+          <line x1="72" y1="300" x2="128" y2="300" stroke="#15201c" stroke-width="4"></line>
+          <line x1="82" y1="318" x2="118" y2="318" stroke="#15201c" stroke-width="4"></line>
+          <text x="136" y="306" fill="#15201c" font-size="18" font-family="sans-serif">GND</text>
+          <rect x="438" y="190" width="170" height="64" rx="8" fill="#f5f1e8" stroke="#15201c" stroke-width="3"></rect>
+          <text x="523" y="228" fill="#15201c" font-size="18" font-family="sans-serif" text-anchor="middle">MCU GPIO</text>
+          <line x1="438" y1="222" x2="58" y2="222" stroke="#15201c" stroke-width="3"></line>
+          <polyline points="380,222 366,210 366,234 380,222" fill="#15201c"></polyline>
+          <text x="420" y="288" fill="#65706b" font-size="16" font-family="sans-serif">GPIO High: ON / GPIO Low: OFF</text>
+        </svg>
+        <p>この構成はとても扱いやすい一方、負荷のGND側がスイッチされます。負荷の片側を必ずGNDに固定したい回路や、外部機器とGND基準の信号を共有する回路では注意が必要です。</p>
+      </section>
+
+      <section>
+        <h2>回路例2: Pchハイサイドスイッチ</h2>
+        <p>負荷の電源側をPch MOSFETで切る回路です。オフ時はゲートをソースと同じ+Vへ引き上げます。オン時はゲートをGND側へ下げ、Vgsを負にします。</p>
+        <svg viewBox="0 0 760 380" role="img" aria-labelledby="pch-high-title pch-high-desc" width="100%">
+          <title id="pch-high-title">Pch MOSFETのハイサイドスイッチ回路</title>
+          <desc id="pch-high-desc">電源側にPch MOSFETを置き、ゲートをプルアップしてオフ、NPNまたはNchでゲートを下げてオンする</desc>
+          <rect x="1" y="1" width="758" height="378" rx="8" fill="#fffdf7" stroke="#d8d0c2"></rect>
+          <text x="92" y="54" fill="#15201c" font-size="20" font-family="sans-serif">+V</text>
+          <line x1="112" y1="66" x2="112" y2="100" stroke="#15201c" stroke-width="4"></line>
+          <line x1="92" y1="118" x2="132" y2="118" stroke="#0f7b68" stroke-width="4"></line>
+          <line x1="92" y1="140" x2="132" y2="140" stroke="#0f7b68" stroke-width="4"></line>
+          <line x1="150" y1="130" x2="174" y2="130" stroke="#0f7b68" stroke-width="4"></line>
+          <line x1="150" y1="92" x2="150" y2="168" stroke="#0f7b68" stroke-width="4"></line>
+          <line x1="112" y1="100" x2="112" y2="118" stroke="#15201c" stroke-width="4"></line>
+          <line x1="112" y1="140" x2="112" y2="182" stroke="#15201c" stroke-width="4"></line>
+          <text x="188" y="136" fill="#0a5c50" font-size="18" font-family="sans-serif">Pch MOSFET</text>
+          <rect x="74" y="182" width="76" height="76" rx="8" fill="#f5f1e8" stroke="#15201c" stroke-width="3"></rect>
+          <text x="112" y="228" fill="#15201c" font-size="18" font-family="sans-serif" text-anchor="middle">Load</text>
+          <line x1="112" y1="258" x2="112" y2="302" stroke="#15201c" stroke-width="4"></line>
+          <line x1="84" y1="302" x2="140" y2="302" stroke="#15201c" stroke-width="4"></line>
+          <line x1="94" y1="320" x2="130" y2="320" stroke="#15201c" stroke-width="4"></line>
+          <text x="152" y="308" fill="#15201c" font-size="18" font-family="sans-serif">GND</text>
+          <polyline points="150,130 310,130 310,72" fill="none" stroke="#15201c" stroke-width="3"></polyline>
+          <polyline points="310,72 292,84 328,100 292,116 328,132 310,144" fill="none" stroke="#0f7b68" stroke-width="4"></polyline>
+          <line x1="310" y1="72" x2="112" y2="72" stroke="#15201c" stroke-width="3"></line>
+          <text x="344" y="114" fill="#0a5c50" font-size="17" font-family="sans-serif">gate pull-up</text>
+          <rect x="448" y="202" width="170" height="64" rx="8" fill="#f5f1e8" stroke="#15201c" stroke-width="3"></rect>
+          <text x="533" y="240" fill="#15201c" font-size="18" font-family="sans-serif" text-anchor="middle">MCU GPIO</text>
+          <line x1="448" y1="234" x2="310" y2="234" stroke="#15201c" stroke-width="3"></line>
+          <line x1="310" y1="234" x2="310" y2="174" stroke="#15201c" stroke-width="3"></line>
+          <circle cx="310" cy="174" r="18" fill="#ffffff" stroke="#15201c" stroke-width="3"></circle>
+          <text x="310" y="181" fill="#15201c" font-size="18" font-family="sans-serif" text-anchor="middle">Q</text>
+          <line x1="310" y1="192" x2="310" y2="302" stroke="#15201c" stroke-width="3"></line>
+          <line x1="282" y1="302" x2="338" y2="302" stroke="#15201c" stroke-width="4"></line>
+          <line x1="292" y1="320" x2="328" y2="320" stroke="#15201c" stroke-width="4"></line>
+          <text x="420" y="316" fill="#65706b" font-size="16" font-family="sans-serif">GPIO HighでQをオンし、Pchのゲートを下げる例</text>
+        </svg>
+        <p>この構成は、負荷のGNDを常にGNDへつないでおけるのが利点です。センサ、モジュール、外部コネクタなど、GND基準の信号線がある負荷を電源ごと切りたい時に使いやすいです。</p>
+      </section>
+
+      <section>
+        <h2>回路例3: Nchハイサイドはドライバが必要</h2>
+        <p>Nch MOSFETをハイサイドに置くと、オンするにはゲートをソースより高くする必要があります。ソースはオン時に+V近くまで上がるため、ゲートは+Vよりさらに高い電圧が必要になります。</p>
+        <pre><code>12 V電源のハイサイドにNchを置く場合
+ソースはオン時に約12 Vへ上がる
+十分にオンするには Vgs = 8 V などが必要
+つまりゲートには約20 Vが必要になる場合がある</code></pre>
+        <p>このため、Nchハイサイドにはチャージポンプ、ブートストラップ、絶縁ドライバなどの専用ゲートドライバを使います。DC-DCコンバータやモータドライバでよく使われる構成ですが、初心者が単純な電源スイッチを作るだけなら、まずPchハイサイドを検討する方が簡単です。</p>
+      </section>
+
+      <section>
+        <h2>選び方</h2>
+        <ol class="steps">
+          <li><span>負荷のどちら側を切るか決める</span>GND側を切ってよければNchローサイド。電源側を切りたいならPchハイサイドを候補にする。</li>
+          <li><span>ゲートを十分に駆動できるか見る</span>NchはVgsを正に、PchはVgsを負にする必要がある。マイコン電圧で足りるか確認する。</li>
+          <li><span>オン抵抗と発熱を見る</span>損失はおおよそ I^2 x Rds(on)。大電流ではNchが有利になりやすい。</li>
+          <li><span>ボディダイオードの向きを見る</span>オフ時に意図しない向きへ電流が流れないか確認する。逆流防止では背中合わせMOSFETが必要になることもある。</li>
+          <li><span>負荷の種類を見る</span>モータやリレーなどの誘導性負荷にはフライバックダイオードやTVSなどの保護を入れる。</li>
+        </ol>
+      </section>
+
+      <section>
+        <h2>よくある失敗</h2>
+        <ul>
+          <li>Nchをハイサイドにそのまま置き、ゲート電圧が足りず半オンになる。</li>
+          <li>Pchをオンするためにゲートを下げすぎ、Vgsの絶対最大定格を超える。</li>
+          <li>マイコンの3.3 V GPIOで、ロジックレベル対応でないMOSFETを駆動してしまう。</li>
+          <li>Rds(on)の条件を見ず、Vgs = 10 V時の値を3.3 V駆動でも使えると思い込む。</li>
+          <li>ボディダイオードの向きを見落とし、オフのつもりでも電流が流れる。</li>
+        </ul>
+      </section>
+
+      <section>
+        <h2>Summary</h2>
+        <p>Nch MOSFETは、GND側を切るローサイドスイッチに使いやすく、低オン抵抗で効率も出しやすい部品です。Pch MOSFETは、電源側を切るハイサイドスイッチをシンプルに組みやすい部品です。大電流のハイサイドではNch + 専用ドライバが有利になることがありますが、初心者はまず「Nchはローサイド、Pchはハイサイド」と覚え、必ずVgs、Rds(on)、ボディダイオード、発熱を確認するのが実用的です。</p>
+      </section>
+
+      <section>
+        <h2>References</h2>
+        <ul>
+          <li><a href="https://toshiba.semicon-storage.com/us/semiconductor/knowledge/e-learning/discrete/chap3/chap3-5.html">Toshiba - Metal-Oxide-Semiconductor Field-Effect Transistors (MOSFETs)</a></li>
+          <li><a href="https://toshiba.semicon-storage.com/ap-en/semiconductor/knowledge/faq/mosfet_common/what-is-a-mosfet.html">Toshiba - What is a MOSFET?</a></li>
+          <li><a href="https://www.infineon.com/products/power/mosfet/p-channel">Infineon - P-channel MOSFETs</a></li>
+          <li><a href="https://www.ti.com/lit/pdf/slpa021">Texas Instruments - Power Supply Design Seminar: MOSFET Basics and Applications</a></li>
+          <li><a href="https://www.analog.com/en/resources/analog-dialogue/articles/driving-a-high-side-mosfet.html">Analog Devices - Driving a High-Side MOSFET Input Switch</a></li>
+        </ul>
+      </section>
+    </main>
+  </body>
+</html>
