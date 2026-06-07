@@ -1,0 +1,154 @@
+<!doctype html>
+<html lang="ja">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>AI技術におけるA2Aとは何か - Instant Question Notes</title>
+    <meta name="description" content="AI技術におけるA2Aを、Agent2Agent Protocol、MCPとの違い、使いどころから初心者向けに整理する">
+    <link rel="stylesheet" href="../../styles/site.css">
+  </head>
+  <body>
+    <header class="site-header compact">
+      <div class="container">
+        <p class="eyebrow"><a href="../../">Instant Question Notes</a> / AI</p>
+        <h1>AI技術におけるA2Aとは何か</h1>
+        <p class="lead">異なるAIエージェント同士が、仕事を依頼し合うための共通プロトコル。</p>
+      </div>
+    </header>
+
+    <main class="container article">
+      <p class="note-meta">Created: 2026-06-07</p>
+
+      <section>
+        <h2>Overview</h2>
+        <p>AI技術でいうA2Aは、多くの場合Agent2Agent Protocolを指します。A2Aは、異なる会社やフレームワークで作られたAIエージェント同士が、互いを見つけ、能力を理解し、タスクを依頼し、結果を受け取るためのオープンな通信ルールです。</p>
+        <p>たとえば、予定調整が得意なエージェント、メール作成が得意なエージェント、社内データ検索が得意なエージェントが別々に存在していても、A2Aに対応していれば、共通の形式でやり取りしやすくなります。</p>
+      </section>
+
+      <section>
+        <h2>動作イメージ</h2>
+        <svg viewBox="0 0 760 340" role="img" aria-labelledby="a2a-title a2a-desc" width="100%">
+          <title id="a2a-title">A2AでAIエージェントが協力する流れ</title>
+          <desc id="a2a-desc">依頼元エージェントが相手の能力を確認し、タスクを送り、進捗と成果物を受け取る</desc>
+          <rect x="1" y="1" width="758" height="338" rx="8" fill="#fffdf7" stroke="#d8d0c2"></rect>
+          <g fill="#f5f1e8" stroke="#15201c" stroke-width="3">
+            <rect x="54" y="86" width="190" height="132" rx="8"></rect>
+            <rect x="516" y="86" width="190" height="132" rx="8"></rect>
+          </g>
+          <g fill="#15201c" font-size="18" font-family="sans-serif" text-anchor="middle">
+            <text x="149" y="130">Client Agent</text>
+            <text x="149" y="164">依頼する側</text>
+            <text x="611" y="130">Remote Agent</text>
+            <text x="611" y="164">仕事を受ける側</text>
+          </g>
+          <g stroke="#0f7b68" stroke-width="5" fill="none" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M258 112 H502"></path>
+            <path d="M490 100 L504 112 L490 124"></path>
+            <path d="M502 156 H258"></path>
+            <path d="M270 144 L256 156 L270 168"></path>
+            <path d="M258 202 H502"></path>
+            <path d="M490 190 L504 202 L490 214"></path>
+          </g>
+          <g fill="#0a5c50" font-size="15" font-family="sans-serif" text-anchor="middle">
+            <text x="380" y="94">能力を確認</text>
+            <text x="380" y="142">タスクを依頼</text>
+            <text x="380" y="190">進捗・成果物を返す</text>
+          </g>
+          <rect x="250" y="252" width="260" height="44" rx="8" fill="#ffffff" stroke="#0f7b68" stroke-width="3"></rect>
+          <text x="380" y="280" fill="#0a5c50" font-size="17" font-family="sans-serif" text-anchor="middle">A2A protocol</text>
+          <text x="58" y="318" fill="#65706b" font-size="16" font-family="sans-serif">エージェントの中身を公開しなくても、共通の会話形式で協力できるようにする</text>
+        </svg>
+      </section>
+
+      <section>
+        <h2>なぜ必要か</h2>
+        <p>AIエージェントは、単体で完結するよりも、別の専門エージェントや別システムと協力したい場面が増えています。しかし、それぞれが独自のAPIやデータ形式だけを持っていると、組み合わせるたびに個別の接続開発が必要になります。</p>
+        <p>A2Aは、その接続部分を共通化するための考え方です。相手がどのモデルを使っているか、内部でどんなツールを呼んでいるかを知らなくても、「どんな仕事ができるか」「どう依頼するか」「結果をどう受け取るか」をそろえます。</p>
+      </section>
+
+      <section>
+        <h2>基本要素</h2>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>要素</th>
+                <th>役割</th>
+                <th>初心者向けの理解</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <th>Agent Card</th>
+                <td>エージェントの名前、説明、能力、エンドポイント、認証方式などを示す情報。</td>
+                <td>相手エージェントの名刺。</td>
+              </tr>
+              <tr>
+                <th>Task</th>
+                <td>依頼する仕事の単位。進行中、完了、失敗などの状態を持つ。</td>
+                <td>「この仕事をお願いします」という依頼票。</td>
+              </tr>
+              <tr>
+                <th>Message</th>
+                <td>ユーザーやエージェントが送る入力、質問、補足など。</td>
+                <td>仕事のやり取りで交わす会話。</td>
+              </tr>
+              <tr>
+                <th>Artifact</th>
+                <td>タスクの結果として返る成果物。テキスト、ファイル、構造化データなどを扱える。</td>
+                <td>完成したレポート、予定案、検索結果のような納品物。</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <section>
+        <h2>MCPとの違い</h2>
+        <p>A2Aと一緒に語られやすいものにMCPがあります。ざっくり言うと、MCPは「AIアプリやエージェントがツールやデータソースへつながるための規格」、A2Aは「エージェント同士が協力するための規格」です。</p>
+        <pre><code>MCP: Agent -> Tool / Data
+A2A: Agent -> Agent</code></pre>
+        <p>たとえば、予定調整エージェントがカレンダーを読む時はMCP的な接続が役に立ちます。一方、その予定調整エージェントが別の出張手配エージェントへ仕事を依頼する時はA2A的な接続が役に立ちます。</p>
+      </section>
+
+      <section>
+        <h2>使いどころ</h2>
+        <ul>
+          <li>複数のAIエージェントを組み合わせて業務フローを作る。</li>
+          <li>ベンダーや部署ごとに違うエージェントを、共通の形式で連携させる。</li>
+          <li>専門エージェントへタスクを委任し、進捗や成果物を受け取る。</li>
+          <li>内部実装を隠したまま、外部から依頼可能なエージェントとして公開する。</li>
+        </ul>
+      </section>
+
+      <section>
+        <h2>注意点</h2>
+        <p>A2Aは「エージェント同士を安全に何でも任せられる魔法」ではありません。実運用では、認証、認可、監査ログ、データの扱い、失敗時の回復、ユーザー確認が必要な操作の制御などを設計する必要があります。</p>
+        <p>また、A2Aに対応していても、エージェントの品質、権限、利用できるデータ、応答の正確性は別問題です。プロトコルは会話の形式をそろえるものなので、業務で使うには運用ルールと評価も欠かせません。</p>
+      </section>
+
+      <section>
+        <h2>背景</h2>
+        <p>A2AはGoogleが2025年4月に発表したプロトコルです。その後、2025年6月にGoogleはA2Aの仕様、SDK、開発者向けツールをLinux Foundationへ寄付し、より中立的なオープンプロジェクトとして進める流れになりました。</p>
+        <p>2026年時点では、AIエージェント間の相互運用性を高めるための代表的な取り組みのひとつとして扱われています。ただし、AIエージェント領域は変化が速いため、実装時は最新の仕様とSDKを確認するのが安全です。</p>
+      </section>
+
+      <section>
+        <h2>Summary</h2>
+        <p>AI技術におけるA2Aは、Agent2Agent Protocolの略として使われることが多く、AIエージェント同士が共通の形式で発見、依頼、進捗共有、成果物交換を行うための仕組みです。MCPが主にツールやデータへの接続を扱うのに対し、A2Aはエージェント同士の協力を扱います。便利な一方で、認証、権限、監査、品質評価まで含めて設計する必要があります。</p>
+      </section>
+
+      <section>
+        <h2>References</h2>
+        <ul>
+          <li><a href="https://developers.googleblog.com/en/a2a-a-new-era-of-agent-interoperability/">Google Developers Blog - Announcing the Agent2Agent Protocol (A2A)</a></li>
+          <li><a href="https://developers.googleblog.com/google-cloud-donates-a2a-to-linux-foundation/">Google Developers Blog - Google Cloud donates A2A to Linux Foundation</a></li>
+          <li><a href="https://www.linuxfoundation.org/press/linux-foundation-launches-the-agent2agent-protocol-project-to-enable-secure-intelligent-communication-between-ai-agents">Linux Foundation - Launches the Agent2Agent Protocol Project</a></li>
+          <li><a href="https://google-a2a.github.io/A2A/specification/">Agent2Agent Protocol - Specification</a></li>
+          <li><a href="https://google-a2a.github.io/A2A/topics/key-concepts/">Agent2Agent Protocol - Key Concepts</a></li>
+          <li><a href="https://modelcontextprotocol.io/docs/getting-started/intro">Model Context Protocol - Introduction</a></li>
+        </ul>
+      </section>
+    </main>
+  </body>
+</html>
