@@ -1,0 +1,97 @@
+<!doctype html>
+<html lang="ja">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>プルアップ抵抗とは何か - Instant Question Notes</title>
+    <meta name="description" content="プルアップ抵抗が必要な理由を、ボタン入力とI2Cを例に初心者向けに整理する">
+    <link rel="stylesheet" href="../../styles/site.css">
+  </head>
+  <body>
+    <header class="site-header compact">
+      <div class="container">
+        <p class="eyebrow"><a href="../../">Instant Question Notes</a> / Hardware</p>
+        <h1>プルアップ抵抗とは何か</h1>
+        <p class="lead">入力ピンや信号線を「何もしていない時でも確実にHIGHへ寄せる」ための抵抗。</p>
+      </div>
+    </header>
+
+    <main class="container article">
+      <p class="note-meta">Created: 2026-06-07</p>
+
+      <section>
+        <h2>Overview</h2>
+        <p>プルアップ抵抗は、信号線を電源側に弱くつなぐ抵抗です。スイッチが開いている時や、ICの出力が信号線を駆動していない時に、入力がふらふらした不定状態になるのを防ぎます。</p>
+        <p>逆に、信号線をGND側へ弱くつなぐ抵抗はプルダウン抵抗です。どちらも目的は「未接続っぽい状態に、あらかじめ意味のある電圧を与えること」です。</p>
+      </section>
+
+      <section>
+        <h2>Basic Circuit</h2>
+        <svg viewBox="0 0 760 300" role="img" aria-labelledby="pullup-title pullup-desc" width="100%">
+          <title id="pullup-title">プルアップ抵抗つきボタン入力回路</title>
+          <desc id="pullup-desc">VCCから抵抗を通って入力ピンへ接続し、ボタンを押すと入力ピンがGNDへ接続される</desc>
+          <rect x="1" y="1" width="758" height="298" rx="8" fill="#fffdf7" stroke="#d8d0c2"></rect>
+          <text x="72" y="58" fill="#15201c" font-size="22" font-family="sans-serif">VCC</text>
+          <line x1="100" y1="72" x2="100" y2="112" stroke="#15201c" stroke-width="4"></line>
+          <polyline points="100,112 82,124 118,140 82,156 118,172 100,184" fill="none" stroke="#0f7b68" stroke-width="4"></polyline>
+          <text x="132" y="153" fill="#0a5c50" font-size="18" font-family="sans-serif">pull-up resistor</text>
+          <line x1="100" y1="184" x2="100" y2="214" stroke="#15201c" stroke-width="4"></line>
+          <line x1="100" y1="214" x2="360" y2="214" stroke="#15201c" stroke-width="4"></line>
+          <circle cx="100" cy="214" r="7" fill="#15201c"></circle>
+          <rect x="360" y="174" width="188" height="80" rx="8" fill="#f5f1e8" stroke="#15201c" stroke-width="3"></rect>
+          <text x="394" y="221" fill="#15201c" font-size="22" font-family="sans-serif">MCU input</text>
+          <line x1="100" y1="214" x2="100" y2="244" stroke="#15201c" stroke-width="4"></line>
+          <line x1="72" y1="244" x2="128" y2="244" stroke="#15201c" stroke-width="4"></line>
+          <line x1="76" y1="266" x2="124" y2="266" stroke="#15201c" stroke-width="4"></line>
+          <text x="140" y="252" fill="#15201c" font-size="18" font-family="sans-serif">button to GND</text>
+          <text x="72" y="92" fill="#65706b" font-size="16" font-family="sans-serif">not pressed: HIGH</text>
+          <text x="72" y="286" fill="#65706b" font-size="16" font-family="sans-serif">pressed: LOW</text>
+        </svg>
+      </section>
+
+      <section>
+        <h2>なぜ必要か</h2>
+        <p>デジタル入力は、HIGHかLOWのどちらかとして読みたいものです。しかしスイッチが開いている時の入力ピンは、どこにも強く接続されていないことがあります。この状態はフローティングと呼ばれ、周囲のノイズや手の接近だけで値が変わることがあります。</p>
+        <p>プルアップ抵抗を入れると、通常時は入力ピンがVCC側に引かれてHIGHになります。ボタンを押した時だけGNDへ強くつながり、LOWとして読めます。</p>
+      </section>
+
+      <section>
+        <h2>抵抗値の考え方</h2>
+        <p>抵抗値は小さすぎると、ボタンを押した時や信号線をLOWにした時に無駄な電流が増えます。大きすぎると、線の容量やノイズの影響でHIGHに戻るのが遅くなったり、不安定になったりします。</p>
+        <p>ボタン入力では、まず10 kΩ前後がよく使われます。I2Cのような通信線では、バス容量、通信速度、ICがLOWに引き込める電流から決める必要があります。</p>
+        <pre><code>例: 3.3 Vで10 kΩのプルアップ
+LOW時に流れる電流 = 3.3 V / 10,000 Ω = 0.33 mA</code></pre>
+      </section>
+
+      <section>
+        <h2>I2Cでの役割</h2>
+        <p>I2CのSDA/SCLは、複数のICが同じ線を共有します。そのため、各ICがHIGHを強く出し合うのではなく、LOWだけを引き込み、HIGHはプルアップ抵抗に任せる構成が使われます。</p>
+        <p>この方式では、誰かがLOWにすればバスはLOWになります。誰もLOWにしていない時だけ、プルアップ抵抗でHIGHへ戻ります。複数デバイスが同じ線を安全に共有するための重要な仕組みです。</p>
+      </section>
+
+      <section>
+        <h2>よくある失敗</h2>
+        <ul>
+          <li>入力ピンをプルアップもプルダウンもせず、値がランダムに見える。</li>
+          <li>外付けプルアップとマイコン内蔵プルアップの両方を意識せず使い、合成抵抗値が想定とズレる。</li>
+          <li>I2Cモジュールを複数つなぎ、各基板のプルアップが並列になって強すぎる。</li>
+          <li>長い配線や高速通信なのに抵抗値が大きすぎて、信号の立ち上がりが遅くなる。</li>
+        </ul>
+      </section>
+
+      <section>
+        <h2>Summary</h2>
+        <p>プルアップ抵抗は、信号線の何もしていない状態をHIGHに決めるための部品です。ボタン入力ではフローティング防止、I2Cでは共有バスを安全にHIGHへ戻す役割があります。抵抗値は「電流を流しすぎないこと」と「信号が遅くなりすぎないこと」のバランスで決めます。</p>
+      </section>
+
+      <section>
+        <h2>References</h2>
+        <ul>
+          <li><a href="https://www.microchip.com/en-us/products/microcontrollers-and-microprocessors/8-bit-mcus/core-independent-and-analog-peripherals/system-flexibility/input-and-output-features">Microchip Technology - Input and Output Features</a></li>
+          <li><a href="https://www.nxp.com/docs/en/user-guide/UM10204.pdf">NXP Semiconductors - I2C-bus specification and user manual UM10204</a></li>
+        </ul>
+      </section>
+    </main>
+  </body>
+</html>
+
