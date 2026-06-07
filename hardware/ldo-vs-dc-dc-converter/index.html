@@ -1,0 +1,123 @@
+<!doctype html>
+<html lang="ja">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>LDOとDC-DCコンバータの違い - Instant Question Notes</title>
+    <meta name="description" content="LDOとDC-DCコンバータの違いを効率、発熱、ノイズ、部品点数、用途で比較する">
+    <link rel="stylesheet" href="../../styles/site.css">
+  </head>
+  <body>
+    <header class="site-header compact">
+      <div class="container">
+        <p class="eyebrow"><a href="../../">Instant Question Notes</a> / Hardware</p>
+        <h1>LDOとDC-DCコンバータの違い</h1>
+        <p class="lead">静かで単純なLDO、効率重視のDC-DC。選び方は「電圧差、電流、熱、ノイズ」で決まる。</p>
+      </div>
+    </header>
+
+    <main class="container article">
+      <p class="note-meta">Created: 2026-06-07</p>
+
+      <section>
+        <h2>Overview</h2>
+        <p>LDOは低ドロップアウトのリニアレギュレータです。入力と出力の差分を熱として捨てながら、出力電圧を安定させます。回路は単純でノイズが少ない一方、電圧差と電流が大きいほど発熱します。</p>
+        <p>DC-DCコンバータは、スイッチ、インダクタ、コンデンサなどを使って電力を変換します。降圧、昇圧、反転などに対応でき、効率は高くしやすい一方、スイッチングノイズや基板レイアウトへの配慮が必要です。</p>
+      </section>
+
+      <section>
+        <h2>Comparison</h2>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>観点</th>
+                <th>LDO</th>
+                <th>DC-DCコンバータ</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <th>基本方式</th>
+                <td>余った電圧を熱として消費するリニア方式。</td>
+                <td>スイッチングでエネルギーを移し替える方式。</td>
+              </tr>
+              <tr>
+                <th>効率</th>
+                <td>おおよそ Vout / Vin に近い。電圧差が大きいと悪化する。</td>
+                <td>条件が合えば高効率にしやすい。損失はIC、インダクタ、スイッチング条件に依存する。</td>
+              </tr>
+              <tr>
+                <th>発熱</th>
+                <td>(Vin - Vout) x Iout が主な熱になる。</td>
+                <td>LDOより発熱を抑えやすいが、大電流では部品選定と放熱設計が必要。</td>
+              </tr>
+              <tr>
+                <th>ノイズ</th>
+                <td>低ノイズにしやすく、アナログ/RF/ADC周辺に向く。</td>
+                <td>スイッチングリップルやEMIが出るため、レイアウトとフィルタが重要。</td>
+              </tr>
+              <tr>
+                <th>部品点数</th>
+                <td>少ない。入力/出力コンデンサ程度で済むことが多い。</td>
+                <td>インダクタ、ダイオードまたは同期スイッチ、補償部品などが必要な場合がある。</td>
+              </tr>
+              <tr>
+                <th>電圧変換</th>
+                <td>基本は降圧のみ。入力は出力より少し高い必要がある。</td>
+                <td>降圧、昇圧、昇降圧、反転などを構成できる。</td>
+              </tr>
+              <tr>
+                <th>向く用途</th>
+                <td>小電流、低ノイズ、電圧差が小さい電源、DC-DC後段のポストレギュレータ。</td>
+                <td>大きな電圧差、大電流、電池寿命重視、発熱を抑えたい電源。</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <section>
+        <h2>効率と熱の見積もり</h2>
+        <p>LDOは考え方が単純です。5 Vから3.3 Vを作り、100 mA流す場合、LDOで消費される熱は次のようになります。</p>
+        <pre><code>損失 = (5.0 V - 3.3 V) x 0.1 A = 0.17 W
+効率の目安 = 3.3 V / 5.0 V = 66%</code></pre>
+        <p>100 mAなら扱いやすいことが多いですが、1 Aになると1.7 Wの熱になります。小さなICではかなり厳しくなります。このように、LDOは「電圧差 x 電流」を最初に見るのが大事です。</p>
+      </section>
+
+      <section>
+        <h2>選び方</h2>
+        <ol class="steps">
+          <li><span>電圧差を見る</span>VinとVoutが近いならLDOが候補。差が大きいならDC-DCを優先する。</li>
+          <li><span>電流を見る</span>小電流ならLDOで十分なことが多い。大電流なら熱の見積もりを先に行う。</li>
+          <li><span>ノイズを見る</span>ADC、センサ、RFなどノイズに弱い部分はLDO、またはDC-DC後段にLDOを置く。</li>
+          <li><span>実装難度を見る</span>DC-DCは部品配置、GND、スイッチング電流ループ、インダクタ選定が効く。</li>
+        </ol>
+      </section>
+
+      <section>
+        <h2>よくある構成</h2>
+        <p>実際の基板では、どちらか一方だけでなく、DC-DCで大きく降圧してからLDOでノイズを落とす構成がよく使われます。</p>
+        <pre><code>Battery / USB / Adapter
+  -> DC-DC converter: 効率よく中間電圧へ変換
+  -> LDO: 低ノイズな3.3 Vや1.8 Vを作る
+  -> MCU / Sensor / ADC / RF</code></pre>
+      </section>
+
+      <section>
+        <h2>Summary</h2>
+        <p>LDOは単純で低ノイズですが、電圧差と電流が大きいと熱が問題になります。DC-DCコンバータは効率と変換自由度に優れますが、スイッチングノイズとレイアウト設計が重要です。迷ったら、まずLDOの損失を計算し、熱が厳しければDC-DCを検討します。</p>
+      </section>
+
+      <section>
+        <h2>References</h2>
+        <ul>
+          <li><a href="https://www.rohm.com/products/faq-search/faqId/1936">ROHM Semiconductor - What are the differences and features between standard regulators and LDOs?</a></li>
+          <li><a href="https://www.analog.com/en/app-notes/an-140.html">Analog Devices - AN-140: Basic Concepts of Linear Regulator and Switching Mode Power Supplies</a></li>
+          <li><a href="https://www.analog.com/en/resources/technical-articles/linear-regulators-in-portable-applications.html">Analog Devices - Linear Regulators in Portable Applications</a></li>
+        </ul>
+      </section>
+    </main>
+  </body>
+</html>
+
