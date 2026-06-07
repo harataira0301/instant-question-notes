@@ -1,0 +1,125 @@
+<!doctype html>
+<html lang="ja">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>FPGAとは何か - Instant Question Notes</title>
+    <meta name="description" content="FPGAとは何かを、CPUやASICとの違い、開発の流れ、向く用途から初心者向けに整理する">
+    <link rel="stylesheet" href="../../styles/site.css">
+  </head>
+  <body>
+    <header class="site-header compact">
+      <div class="container">
+        <p class="eyebrow"><a href="../../">Instant Question Notes</a> / Hardware</p>
+        <h1>FPGAとは何か</h1>
+        <p class="lead">あとから回路の形を作り替えられる、プログラム可能なデジタル回路の部品。</p>
+      </div>
+    </header>
+
+    <main class="container article">
+      <p class="note-meta">Created: 2026-06-07</p>
+
+      <section>
+        <h2>Overview</h2>
+        <p>FPGAはField Programmable Gate Arrayの略です。直訳すると「現場でプログラムできるゲートの配列」で、購入後に中身のデジタル回路を設定できる半導体です。</p>
+        <p>普通のCPUは、すでに決まった回路の上で命令を順番に実行します。一方FPGAは、加算器、カウンタ、通信回路、画像処理回路のような「回路そのもの」を作って動かします。</p>
+      </section>
+
+      <section>
+        <h2>イメージ</h2>
+        <svg viewBox="0 0 760 320" role="img" aria-labelledby="fpga-title fpga-desc" width="100%">
+          <title id="fpga-title">FPGAの内部イメージ</title>
+          <desc id="fpga-desc">たくさんの小さな論理ブロックを配線でつなぎ替えて目的の回路を作る様子</desc>
+          <rect x="1" y="1" width="758" height="318" rx="8" fill="#fffdf7" stroke="#d8d0c2"></rect>
+          <rect x="58" y="58" width="644" height="204" rx="10" fill="#f5f1e8" stroke="#15201c" stroke-width="3"></rect>
+          <text x="86" y="42" fill="#15201c" font-size="20" font-family="sans-serif">FPGA chip</text>
+          <g fill="#ffffff" stroke="#0f7b68" stroke-width="3">
+            <rect x="96" y="96" width="82" height="56" rx="8"></rect>
+            <rect x="252" y="96" width="82" height="56" rx="8"></rect>
+            <rect x="408" y="96" width="82" height="56" rx="8"></rect>
+            <rect x="564" y="96" width="82" height="56" rx="8"></rect>
+            <rect x="96" y="184" width="82" height="56" rx="8"></rect>
+            <rect x="252" y="184" width="82" height="56" rx="8"></rect>
+            <rect x="408" y="184" width="82" height="56" rx="8"></rect>
+            <rect x="564" y="184" width="82" height="56" rx="8"></rect>
+          </g>
+          <g fill="#0a5c50" font-size="16" font-family="sans-serif" text-anchor="middle">
+            <text x="137" y="130">logic</text>
+            <text x="293" y="130">logic</text>
+            <text x="449" y="130">logic</text>
+            <text x="605" y="130">logic</text>
+            <text x="137" y="218">logic</text>
+            <text x="293" y="218">logic</text>
+            <text x="449" y="218">logic</text>
+            <text x="605" y="218">logic</text>
+          </g>
+          <g stroke="#15201c" stroke-width="4" fill="none">
+            <path d="M178 124 H252"></path>
+            <path d="M334 124 H408"></path>
+            <path d="M490 124 H564"></path>
+            <path d="M137 152 V184"></path>
+            <path d="M293 152 V184"></path>
+            <path d="M449 152 V184"></path>
+            <path d="M605 152 V184"></path>
+            <path d="M178 212 H252"></path>
+            <path d="M334 212 H408"></path>
+            <path d="M490 212 H564"></path>
+          </g>
+          <text x="84" y="290" fill="#65706b" font-size="16" font-family="sans-serif">小さな論理ブロックと配線の組み合わせで、目的の回路を構成する</text>
+        </svg>
+      </section>
+
+      <section>
+        <h2>CPUとの違い</h2>
+        <p>CPUは「決まった回路で、ソフトウェアの命令を順番に実行する」部品です。足し算、条件分岐、メモリ読み書きなどを高速に切り替えながら処理します。</p>
+        <p>FPGAは「処理に合わせた専用回路を作る」部品です。複数の処理を並列に並べられるため、条件が合うとCPUより低遅延で大量のデータを処理できます。ただし、ソフトウェアを書く感覚だけでは扱いにくく、回路としての時間や信号の流れを考える必要があります。</p>
+      </section>
+
+      <section>
+        <h2>ASICとの違い</h2>
+        <p>ASICは、特定用途向けに製造時点で回路を固定した専用チップです。大量生産では高速・低消費電力・低単価にしやすい反面、作り直しには大きな費用と時間がかかります。</p>
+        <p>FPGAは製造後に中身を設定できるため、試作、少量生産、仕様変更があり得る製品に向きます。ASICほど最適化しにくい代わりに、「あとから直せる」ことが大きな価値になります。</p>
+      </section>
+
+      <section>
+        <h2>開発の流れ</h2>
+        <ol class="steps">
+          <li><span>回路の動きを書く</span>VerilogやVHDLなどのハードウェア記述言語で、レジスタ、状態遷移、信号の接続を表す。</li>
+          <li><span>シミュレーションする</span>入力信号を与えて、クロックごとの出力や内部状態が意図通りか確認する。</li>
+          <li><span>合成・配置配線する</span>記述した回路をFPGA内部の論理ブロックや配線に割り当てる。</li>
+          <li><span>書き込んで動かす</span>生成されたビットストリームをFPGAへ書き込み、実機でタイミングや入出力を確認する。</li>
+        </ol>
+      </section>
+
+      <section>
+        <h2>向いている用途</h2>
+        <ul>
+          <li>映像、音声、通信パケットなど、同じ処理を大量データに連続して行う用途。</li>
+          <li>センサ入力から制御出力までの遅延を小さくしたい用途。</li>
+          <li>独自の通信プロトコル、特殊なI/O、試作中の回路検証。</li>
+          <li>ASICを作る前のプロトタイプや、少量生産で専用回路が必要な製品。</li>
+        </ul>
+      </section>
+
+      <section>
+        <h2>注意点</h2>
+        <p>FPGAは「C言語を書けば速くなる部品」ではありません。並列処理、クロック、セットアップ時間、ホールド時間、メモリ帯域、I/O電圧など、ハードウェア特有の制約があります。</p>
+        <p>また、FPGA本体だけでなく、電源、クロック、リセット、外部メモリ、ピン配置、基板レイアウトも重要です。初心者はまず小さな開発ボードで、LED点滅、ボタン入力、UART送受信のような単純な回路から始めると理解しやすくなります。</p>
+      </section>
+
+      <section>
+        <h2>Summary</h2>
+        <p>FPGAは、あとから中身のデジタル回路を作り替えられる半導体です。CPUのように命令を順番に実行するのではなく、目的に合わせた回路を構成して動かします。仕様変更に強く、並列処理や低遅延が必要な場面に向きますが、開発ではソフトウェアよりも「回路を設計する」考え方が必要です。</p>
+      </section>
+
+      <section>
+        <h2>References</h2>
+        <ul>
+          <li><a href="https://www.amd.com/en/products/adaptive-socs-and-fpgas/fpga.html">AMD - FPGA devices</a></li>
+          <li><a href="https://www.intel.com/content/www/us/en/products/details/fpga.html">Intel - FPGAs and programmable devices</a></li>
+          <li><a href="https://www.microchip.com/en-us/products/fpgas-and-plds/fpgas">Microchip Technology - FPGAs</a></li>
+        </ul>
+      </section>
+    </main>
+  </body>
+</html>
