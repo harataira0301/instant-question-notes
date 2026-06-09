@@ -1,0 +1,160 @@
+<!doctype html>
+<html lang="ja">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>ADCとナイキスト周波数 - Instant Question Notes</title>
+    <meta name="description" content="ADCとナイキスト周波数を、サンプリング、エイリアシング、アンチエイリアスフィルタから初学者向けに整理する">
+    <link rel="stylesheet" href="../../styles/site.css">
+  </head>
+  <body>
+    <header class="site-header compact">
+      <div class="container">
+        <p class="eyebrow"><a href="../../">Instant Question Notes</a> / Hardware</p>
+        <h1>ADCとナイキスト周波数</h1>
+        <p class="lead">ADCはアナログ信号を一定間隔で読む。読める周波数の上限の目安が、サンプリング周波数の半分。</p>
+      </div>
+    </header>
+
+    <main class="container article">
+      <p class="note-meta">Created: 2026-06-09</p>
+
+      <section>
+        <h2>Overview</h2>
+        <p>ADCはAnalog-to-Digital Converterの略で、連続的に変化する電圧を、コンピュータやマイコンが扱える数値に変換する部品です。温度センサ、音声、電流、電池電圧などのアナログ量を読む時に使います。</p>
+        <p>ADCは信号を連続的に見続けるのではなく、一定間隔で「今の電圧はいくつか」を読みます。この読み取る速さをサンプリング周波数と呼びます。ナイキスト周波数は、そのサンプリング周波数の半分です。</p>
+        <pre><code>サンプリング周波数 fs = 10 kHz
+ナイキスト周波数 fN = fs / 2 = 5 kHz</code></pre>
+      </section>
+
+      <section>
+        <h2>サンプリングのイメージ</h2>
+        <svg viewBox="0 0 760 360" role="img" aria-labelledby="sampling-title sampling-desc" width="100%">
+          <title id="sampling-title">ADCがアナログ波形を一定間隔でサンプリングする様子</title>
+          <desc id="sampling-desc">連続した波形上の点を一定間隔で読み取り、数値列に変換する</desc>
+          <rect x="1" y="1" width="758" height="358" rx="8" fill="#fffdf7" stroke="#d8d0c2"></rect>
+          <line x1="64" y1="278" x2="700" y2="278" stroke="#15201c" stroke-width="3"></line>
+          <line x1="64" y1="68" x2="64" y2="278" stroke="#15201c" stroke-width="3"></line>
+          <path d="M64 174 C104 90 144 90 184 174 S264 258 304 174 S384 90 424 174 S504 258 544 174 S624 90 664 174" fill="none" stroke="#0f7b68" stroke-width="5"></path>
+          <g fill="#15201c">
+            <circle cx="84" cy="135" r="6"></circle>
+            <circle cx="144" cy="92" r="6"></circle>
+            <circle cx="204" cy="212" r="6"></circle>
+            <circle cx="264" cy="255" r="6"></circle>
+            <circle cx="324" cy="135" r="6"></circle>
+            <circle cx="384" cy="92" r="6"></circle>
+            <circle cx="444" cy="212" r="6"></circle>
+            <circle cx="504" cy="255" r="6"></circle>
+            <circle cx="564" cy="135" r="6"></circle>
+            <circle cx="624" cy="92" r="6"></circle>
+          </g>
+          <g stroke="#d8d0c2" stroke-width="2">
+            <line x1="84" y1="135" x2="84" y2="278"></line>
+            <line x1="144" y1="92" x2="144" y2="278"></line>
+            <line x1="204" y1="212" x2="204" y2="278"></line>
+            <line x1="264" y1="255" x2="264" y2="278"></line>
+            <line x1="324" y1="135" x2="324" y2="278"></line>
+            <line x1="384" y1="92" x2="384" y2="278"></line>
+            <line x1="444" y1="212" x2="444" y2="278"></line>
+            <line x1="504" y1="255" x2="504" y2="278"></line>
+            <line x1="564" y1="135" x2="564" y2="278"></line>
+            <line x1="624" y1="92" x2="624" y2="278"></line>
+          </g>
+          <text x="82" y="320" fill="#65706b" font-size="16" font-family="sans-serif">黒い点がADCのサンプル。点と点の間で何が起きたかは、直接は見えていない。</text>
+        </svg>
+      </section>
+
+      <section>
+        <h2>ナイキスト周波数とは</h2>
+        <p>ナイキスト周波数は、サンプリング周波数の半分です。サンプリング周波数をfsとすると、ナイキスト周波数fNは次のようになります。</p>
+        <pre><code>fN = fs / 2</code></pre>
+        <p>たとえば、ADCを1秒あたり48,000回サンプリングするなら、ナイキスト周波数は24,000 Hzです。理論上、24,000 Hzより低い周波数成分だけでできた信号なら、十分な条件のもとで元の信号を復元できます。</p>
+        <p>ここで大事なのは「サンプリング周波数の半分までなら何でも完璧に測れる」という意味ではないことです。実際にはADCの入力帯域、分解能、ノイズ、フィルタ、ジッタ、信号源インピーダンスなども効きます。</p>
+      </section>
+
+      <section>
+        <h2>エイリアシング</h2>
+        <p>ナイキスト周波数を超える成分がADCに入ると、低い周波数の別の信号のように見えることがあります。これをエイリアシングと呼びます。いったんデジタル値になってからでは、本物の低周波なのか、高周波が折り返して見えているのかを区別できません。</p>
+        <svg viewBox="0 0 760 330" role="img" aria-labelledby="alias-title alias-desc" width="100%">
+          <title id="alias-title">ナイキスト周波数を超えた信号が低周波に見える様子</title>
+          <desc id="alias-desc">高い周波数の入力がサンプリング後に低い周波数の波形として観測される</desc>
+          <rect x="1" y="1" width="758" height="328" rx="8" fill="#fffdf7" stroke="#d8d0c2"></rect>
+          <line x1="64" y1="250" x2="700" y2="250" stroke="#15201c" stroke-width="3"></line>
+          <line x1="64" y1="62" x2="64" y2="250" stroke="#15201c" stroke-width="3"></line>
+          <path d="M64 156 C84 66 104 66 124 156 S164 246 184 156 S224 66 244 156 S284 246 304 156 S344 66 364 156 S404 246 424 156 S464 66 484 156 S524 246 544 156 S584 66 604 156 S644 246 664 156" fill="none" stroke="#d8d0c2" stroke-width="4"></path>
+          <path d="M84 96 C190 250 298 250 404 96 S618 96 664 156" fill="none" stroke="#0f7b68" stroke-width="5"></path>
+          <g fill="#15201c">
+            <circle cx="84" cy="96" r="6"></circle>
+            <circle cx="164" cy="246" r="6"></circle>
+            <circle cx="244" cy="156" r="6"></circle>
+            <circle cx="324" cy="66" r="6"></circle>
+            <circle cx="404" cy="96" r="6"></circle>
+            <circle cx="484" cy="246" r="6"></circle>
+            <circle cx="564" cy="156" r="6"></circle>
+            <circle cx="644" cy="66" r="6"></circle>
+          </g>
+          <text x="72" y="292" fill="#65706b" font-size="16" font-family="sans-serif">薄い線: 実際の高周波 / 緑線: サンプル点から見えてしまう低周波のような波形</text>
+        </svg>
+      </section>
+
+      <section>
+        <h2>具体例</h2>
+        <p>サンプリング周波数が10 kHzのADCでは、ナイキスト周波数は5 kHzです。この時、7 kHzのノイズがADCに入ると、サンプリング後には3 kHzの成分のように見える場合があります。</p>
+        <pre><code>fs = 10 kHz
+fN = 5 kHz
+入力に 7 kHz 成分がある
+
+折り返しの例:
+10 kHz - 7 kHz = 3 kHz
+
+結果:
+7 kHzの高周波が、3 kHzの信号のように見える</code></pre>
+        <p>この3 kHzはデジタル処理だけでは取り除きにくいです。デジタル化された後は、普通の3 kHz信号と区別できないためです。</p>
+      </section>
+
+      <section>
+        <h2>アンチエイリアスフィルタ</h2>
+        <p>エイリアシングを防ぐには、ADCに入る前のアナログ段で、ナイキスト周波数より高い成分を十分に減らす必要があります。このために入れるローパスフィルタをアンチエイリアスフィルタと呼びます。</p>
+        <p>理想的には、欲しい周波数だけを通し、ナイキスト周波数以上を完全に切りたいところです。しかし現実のフィルタには遷移帯域があります。つまり、ある周波数から急にゼロにはならず、だんだん減衰します。そのため実務では、サンプリング周波数を必要最小限の2倍ぴったりではなく、余裕を持って高くすることが多いです。</p>
+      </section>
+
+      <section>
+        <h2>選び方の目安</h2>
+        <ol class="steps">
+          <li><span>測りたい最高周波数を決める</span>温度のようにゆっくり変わる信号か、音声や振動のように速く変わる信号かを見る。</li>
+          <li><span>サンプリング周波数を決める</span>最低でも測りたい最高周波数の2倍より高くする。実務ではフィルタ余裕を見てさらに高くする。</li>
+          <li><span>アンチエイリアスフィルタを入れる</span>ADCの前で、不要な高周波やノイズを落とす。</li>
+          <li><span>ADCの性能も確認する</span>分解能、入力帯域、サンプリング速度、入力インピーダンス、ノイズを確認する。</li>
+          <li><span>必要ならオーバーサンプリングする</span>高めのサンプリング周波数で取り、デジタルフィルタ後に間引くと設計しやすい場合がある。</li>
+        </ol>
+      </section>
+
+      <section>
+        <h2>よくある誤解</h2>
+        <ul>
+          <li>「ナイキスト周波数までなら必ず正確に測れる」わけではない。ADCの精度やアナログ回路も効く。</li>
+          <li>「サンプリング周波数を2倍にすれば十分」とは限らない。現実のフィルタには遷移帯域がある。</li>
+          <li>エイリアシングした成分は、デジタル化後に本物の低周波と区別しにくい。</li>
+          <li>平均化すれば何でも良くなるわけではない。折り返した周期成分は平均化で消えないことがある。</li>
+          <li>ADCのサンプルレートだけでなく、入力回路、センサ、配線、ノイズ源も見る必要がある。</li>
+        </ul>
+      </section>
+
+      <section>
+        <h2>Summary</h2>
+        <p>ADCはアナログ信号を一定間隔でサンプリングして数値に変換します。ナイキスト周波数はサンプリング周波数の半分で、これを超える周波数成分がADCに入ると、低い周波数へ折り返して見えるエイリアシングが起きます。実用設計では、測りたい信号帯域より十分高いサンプリング周波数を選び、ADCの前にアンチエイリアスフィルタを入れて、不要な高周波をデジタル化前に落とします。</p>
+      </section>
+
+      <section>
+        <h2>References</h2>
+        <ul>
+          <li><a href="https://www.analog.com/en/resources/technical-articles/guide-to-antialiasing-filter-basics.html">Analog Devices - Filter Basics: Anti-Aliasing</a></li>
+          <li><a href="https://www.analog.com/en/resources/technical-articles/understanding-ac-behaviors-of-high-speed-adcs.html">Analog Devices - Understanding AC Behaviors of High Speed ADCs</a></li>
+          <li><a href="https://www.ni.com/en/shop/data-acquisition/measurement-fundamentals/analog-fundamentals/acquiring-an-analog-signal--bandwidth--nyquist-sampling-theorem-.html">NI - Bandwidth, Nyquist Sampling Theorem, and Aliasing</a></li>
+          <li><a href="https://www.ni.com/en/shop/data-acquisition/measurement-fundamentals/analog-fundamentals/anti-aliasing-filters-and-their-usage-explained.html">NI - Anti-Aliasing Filters and Their Usage Explained</a></li>
+          <li><a href="https://www.ti.com/lit/an/slaa510/slaa510.pdf">Texas Instruments - Oversampling the ADC12 for Higher Resolution</a></li>
+        </ul>
+      </section>
+    </main>
+  </body>
+</html>
