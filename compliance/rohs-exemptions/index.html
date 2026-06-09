@@ -1,0 +1,169 @@
+<!doctype html>
+<html lang="ja">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>RoHSの適用除外規定とは何か - Instant Question Notes</title>
+    <meta name="description" content="RoHSの適用除外規定を、Annex III/IV、用途限定、期限、更新、実務確認の流れから整理する">
+    <link rel="stylesheet" href="../../styles/site.css">
+  </head>
+  <body>
+    <header class="site-header compact">
+      <div class="container">
+        <p class="eyebrow"><a href="../../">Instant Question Notes</a> / Compliance</p>
+        <h1>RoHSの適用除外規定とは何か</h1>
+        <p class="lead">RoHSで制限される物質でも、特定用途に限って期限付きで認める例外ルール。</p>
+      </div>
+    </header>
+
+    <main class="container article">
+      <p class="note-meta">Created: 2026-06-09</p>
+
+      <section>
+        <h2>Overview</h2>
+        <p>RoHSは、電気電子機器に含まれる特定有害物質の使用を制限する規制です。EU RoHSでは、鉛、水銀、カドミウム、六価クロム、PBB、PBDE、DEHP、BBP、DBP、DIBPなどが制限対象になっています。</p>
+        <p>ただし、すべての用途で直ちに代替できるわけではありません。安全性、信頼性、技術的実現性の理由で、現時点では特定物質を使わざるを得ない用途があります。そのためRoHSには、特定用途に限って制限物質の使用を認める適用除外規定があります。</p>
+        <p>このノートはEU RoHSを前提にした概要です。法規制は更新されるため、実務判断では必ず最新の公式情報、顧客要求、対象国・地域の規制を確認してください。</p>
+      </section>
+
+      <section>
+        <h2>重要な考え方</h2>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>誤解しやすい理解</th>
+                <th>正しい理解</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>鉛はRoHSで適用除外だから使える。</td>
+                <td>特定の製品カテゴリ、特定用途、特定条件、特定期限に限って使える場合がある。</td>
+              </tr>
+              <tr>
+                <td>一度適用除外なら永久に有効。</td>
+                <td>多くの適用除外には有効期限があり、更新・失効・条件変更がある。</td>
+              </tr>
+              <tr>
+                <td>部品がRoHS compliantなら確認不要。</td>
+                <td>適用除外を使っているRoHS適合の可能性があるため、除外番号と用途を確認する。</td>
+              </tr>
+              <tr>
+                <td>EU RoHSでOKなら全世界で同じ。</td>
+                <td>中国RoHS、UK RoHS、顧客独自基準などは別途確認が必要。</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <section>
+        <h2>Annex IIIとAnnex IV</h2>
+        <p>EU RoHSの適用除外は、主に附属書のリストで管理されます。用途ごとに除外番号、対象物質、条件、対象カテゴリ、有効期限が定められます。</p>
+        <ul>
+          <li>Annex III: 一般的な電気電子機器に関する適用除外。</li>
+          <li>Annex IV: 医療機器、監視・制御機器に特有の適用除外。</li>
+        </ul>
+        <p>たとえば、同じ鉛を含む用途でも、一般機器向けのAnnex IIIと、医療・計測機器向けのAnnex IVでは条件や期限が異なる場合があります。</p>
+      </section>
+
+      <section>
+        <h2>適用除外の流れ</h2>
+        <svg viewBox="0 0 760 360" role="img" aria-labelledby="rohs-title rohs-desc" width="100%">
+          <title id="rohs-title">RoHS適用除外を確認する流れ</title>
+          <desc id="rohs-desc">制限物質を確認し、製品カテゴリ、用途、Annex、期限、証跡を確認する</desc>
+          <rect x="1" y="1" width="758" height="358" rx="8" fill="#fffdf7" stroke="#d8d0c2"></rect>
+          <g fill="#f5f1e8" stroke="#15201c" stroke-width="3">
+            <rect x="48" y="84" width="126" height="86" rx="8"></rect>
+            <rect x="216" y="84" width="126" height="86" rx="8"></rect>
+            <rect x="384" y="84" width="126" height="86" rx="8"></rect>
+            <rect x="552" y="84" width="126" height="86" rx="8"></rect>
+            <rect x="216" y="220" width="326" height="72" rx="8"></rect>
+          </g>
+          <g fill="#15201c" font-size="16" font-family="sans-serif" text-anchor="middle">
+            <text x="111" y="118">対象物質</text>
+            <text x="111" y="144">を確認</text>
+            <text x="279" y="118">製品カテゴリ</text>
+            <text x="279" y="144">を確認</text>
+            <text x="447" y="118">Annex III/IV</text>
+            <text x="447" y="144">を照合</text>
+            <text x="615" y="118">期限・条件</text>
+            <text x="615" y="144">を確認</text>
+            <text x="379" y="250">根拠資料を残す</text>
+            <text x="379" y="274">除外番号・用途・期限・供給元証明</text>
+          </g>
+          <g stroke="#0f7b68" stroke-width="5" fill="none" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M182 127 H207"></path>
+            <path d="M198 116 L210 127 L198 138"></path>
+            <path d="M350 127 H375"></path>
+            <path d="M366 116 L378 127 L366 138"></path>
+            <path d="M518 127 H543"></path>
+            <path d="M534 116 L546 127 L534 138"></path>
+            <path d="M615 174 C615 222 548 256 548 256"></path>
+            <path d="M535 248 L546 257 L534 267"></path>
+          </g>
+          <text x="54" y="326" fill="#65706b" font-size="16" font-family="sans-serif">適用除外は「使ってよい理由」を説明するための証跡管理が重要。</text>
+        </svg>
+      </section>
+
+      <section>
+        <h2>認められる理由</h2>
+        <p>RoHSの適用除外は、科学技術の進歩に合わせて追加、更新、削除されます。主な判断軸は、代替や除去が科学的・技術的に実行困難か、代替品の信頼性が十分か、代替による環境・健康・消費者安全への影響がどうか、といった点です。</p>
+        <p>つまり、単に「コストが上がるから」だけでは根拠として弱く、技術的必要性、信頼性、安全性、環境・健康影響を説明できる必要があります。</p>
+      </section>
+
+      <section>
+        <h2>期限と更新</h2>
+        <p>適用除外には有効期限があります。EU RoHSでは、附属書に掲載された適用除外は期限付きで、更新申請や欧州委員会の判断により延長、条件変更、失効が起こります。</p>
+        <p>一般的には、製品カテゴリによって5年または7年を上限とする扱いがあります。ただし、個別の除外ごとに期限や条件が異なるため、必ず最新のAnnexと委任指令を確認します。期限内に更新申請が提出された場合、欧州委員会の決定まで既存除外が有効に扱われる規定もあります。</p>
+      </section>
+
+      <section>
+        <h2>実務で見るべき項目</h2>
+        <ol class="steps">
+          <li><span>対象製品を確認する</span>その製品がRoHS対象の電気電子機器か、対象カテゴリは何かを確認する。</li>
+          <li><span>含有物質と濃度を確認する</span>均質材料単位で、制限物質が閾値を超えるかを見る。</li>
+          <li><span>該当しそうな除外番号を探す</span>Annex IIIまたはAnnex IVから、用途とカテゴリに合う除外を探す。</li>
+          <li><span>用途条件を読む</span>物質名だけで判断せず、用途、部品、材料、濃度、カテゴリ、期限まで確認する。</li>
+          <li><span>証跡を保存する</span>サプライヤ宣言、材料宣言、試験報告、除外番号、適用理由、有効期限を残す。</li>
+          <li><span>更新状況を監視する</span>期限切れ、延長、条件変更、代替要求に備えて定期的に確認する。</li>
+        </ol>
+      </section>
+
+      <section>
+        <h2>例: 鉛入りはんだの考え方</h2>
+        <p>「鉛入りはんだはRoHSで使えるか」という質問には、単純にYes/Noでは答えられません。一般的な民生機器では、鉛入りはんだは原則として使えないケースが多いです。一方で、特定用途や特定カテゴリでは、信頼性や代替困難性を理由に、鉛の使用が適用除外として認められる場合があります。</p>
+        <p>したがって実務では、「鉛」や「はんだ」という単語だけで判断せず、製品カテゴリ、用途、部品、除外番号、有効期限をセットで確認します。</p>
+      </section>
+
+      <section>
+        <h2>よくある失敗</h2>
+        <ul>
+          <li>古いRoHS除外リストを使い続ける。</li>
+          <li>除外番号は合っているが、製品カテゴリが対象外。</li>
+          <li>除外番号は合っているが、用途の文言が自社用途と違う。</li>
+          <li>有効期限や更新状況を見落とす。</li>
+          <li>サプライヤのRoHS適合宣言だけで、適用除外の有無を確認していない。</li>
+          <li>EU RoHS、UK RoHS、中国RoHS、顧客グリーン調達基準を混同する。</li>
+        </ul>
+      </section>
+
+      <section>
+        <h2>Summary</h2>
+        <p>RoHSの適用除外規定は、制限物質を自由に使ってよい制度ではありません。特定の製品カテゴリ、特定用途、特定条件、特定期限に限って、例外的に使用を認める制度です。実務では、Annex III/IVの除外番号、用途条件、対象カテゴリ、有効期限、更新状況、サプライヤ証跡をセットで確認する必要があります。</p>
+      </section>
+
+      <section>
+        <h2>References</h2>
+        <ul>
+          <li><a href="https://environment.ec.europa.eu/topics/waste-and-recycling/rohs-directive_en">European Commission - RoHS Directive</a></li>
+          <li><a href="https://environment.ec.europa.eu/topics/waste-and-recycling/rohs-directive/implementation-rohs-directive_en">European Commission - Implementation of RoHS Directive</a></li>
+          <li><a href="https://www.echa.europa.eu/web/guest/exemptions-art-4-restrictions-rohs">ECHA - Exemptions from RoHS restrictions, Annexes III and IV</a></li>
+          <li><a href="https://eur-lex.europa.eu/legal-content/EN/TXT/?uri=CELEX%3A32011L0065">EUR-Lex - Directive 2011/65/EU</a></li>
+          <li><a href="https://eur-lex.europa.eu/legal-content/EN/TXT/?uri=CELEX%3A32015L0863">EUR-Lex - Commission Delegated Directive (EU) 2015/863</a></li>
+        </ul>
+      </section>
+    </main>
+  </body>
+</html>
