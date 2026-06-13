@@ -1,0 +1,201 @@
+<!doctype html>
+<html lang="ja">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>USBのコンプライアンステストとは何か - Instant Question Notes</title>
+    <meta name="description" content="USBのコンプライアンステストを、USB-IF認証、電気試験、機能試験、相互接続性試験、Type-C/USB PDの観点から整理する">
+    <link rel="stylesheet" href="../../styles/site.css">
+  </head>
+  <body>
+    <header class="site-header compact">
+      <div class="container">
+        <p class="eyebrow"><a href="../../">Instant Question Notes</a> / Compliance</p>
+        <h1>USBのコンプライアンステストとは何か</h1>
+        <p class="lead">USB製品が仕様どおり動き、他社製品とも安全に接続できるかを確認する試験。</p>
+      </div>
+    </header>
+
+    <main class="container article">
+      <p class="note-meta">Created: 2026-06-13</p>
+
+      <section>
+        <h2>Overview</h2>
+        <p>USBのコンプライアンステストは、USB製品がUSB仕様に沿って実装されているかを確認する試験です。単に「PCにつながった」だけではなく、電気的な波形、プロトコル、デスクリプタ、電源、コネクタ、ケーブル、相互接続性などを確認します。</p>
+        <p>USB-IFのCompliance Programでは、実製品で適合性を測るために複数の試験仕様とTest ID、つまりTIDを使います。合格した製品はUSB-IF認証品として扱われ、Integrators Listへの掲載やUSB-IFロゴ利用につながります。</p>
+      </section>
+
+      <section>
+        <h2>何のためにやるか</h2>
+        <ul>
+          <li>他社のホスト、デバイス、ハブ、ケーブルと安定して接続するため。</li>
+          <li>信号品質が規格範囲に入り、通信エラーや認識不良を減らすため。</li>
+          <li>Type-CやUSB PDで、電源供給・ロール切替・ケーブル判定を安全に行うため。</li>
+          <li>USB-IFロゴを製品やパッケージで使うため。</li>
+          <li>量産後に「特定PCだけ認識しない」「特定ケーブルだけ充電できない」といった問題を減らすため。</li>
+        </ul>
+      </section>
+
+      <section>
+        <h2>全体像</h2>
+        <svg viewBox="0 0 760 340" role="img" aria-labelledby="usb-test-title usb-test-desc" width="100%">
+          <title id="usb-test-title">USBコンプライアンステストの全体像</title>
+          <desc id="usb-test-desc">設計、事前評価、登録、認定試験所での試験、USB-IFレビュー、認証の流れ</desc>
+          <rect x="1" y="1" width="758" height="338" rx="8" fill="#fffdf7" stroke="#d8d0c2"></rect>
+          <g fill="#f5f1e8" stroke="#15201c" stroke-width="3">
+            <rect x="42" y="92" width="104" height="78" rx="8"></rect>
+            <rect x="176" y="92" width="104" height="78" rx="8"></rect>
+            <rect x="310" y="92" width="104" height="78" rx="8"></rect>
+            <rect x="444" y="92" width="104" height="78" rx="8"></rect>
+            <rect x="578" y="92" width="134" height="78" rx="8"></rect>
+          </g>
+          <g fill="#15201c" font-size="15" font-family="sans-serif" text-anchor="middle">
+            <text x="94" y="122">設計</text>
+            <text x="94" y="146">仕様確認</text>
+            <text x="228" y="122">事前評価</text>
+            <text x="228" y="146">波形/機能</text>
+            <text x="362" y="122">登録</text>
+            <text x="362" y="146">製品情報</text>
+            <text x="496" y="122">試験</text>
+            <text x="496" y="146">ITL/WS</text>
+            <text x="645" y="122">USB-IF</text>
+            <text x="645" y="146">レビュー/認証</text>
+          </g>
+          <g stroke="#0f7b68" stroke-width="4" fill="none" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M150 132 H169"></path>
+            <path d="M162 122 L172 132 L162 142"></path>
+            <path d="M284 132 H303"></path>
+            <path d="M296 122 L306 132 L296 142"></path>
+            <path d="M418 132 H437"></path>
+            <path d="M430 122 L440 132 L430 142"></path>
+            <path d="M552 132 H571"></path>
+            <path d="M564 122 L574 132 L564 142"></path>
+          </g>
+          <rect x="104" y="224" width="552" height="56" rx="8" fill="#ffffff" stroke="#0f7b68" stroke-width="3"></rect>
+          <text x="380" y="258" fill="#0a5c50" font-size="17" font-family="sans-serif" text-anchor="middle">電気試験 + 機能試験 + 相互接続性試験 + Type-C/PD試験</text>
+          <text x="48" y="312" fill="#65706b" font-size="16" font-family="sans-serif">量産直前に初めて見るのではなく、基板設計中から試験項目を逆算する。</text>
+        </svg>
+      </section>
+
+      <section>
+        <h2>代表的な試験分野</h2>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>分野</th>
+                <th>見るもの</th>
+                <th>よく問題になる点</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <th>Electrical</th>
+                <td>信号品質、アイパターン、ジッタ、立ち上がり、インピーダンス、電圧レベルなど。</td>
+                <td>配線長、差動インピーダンス、ESD部品、コネクタ周辺、リターンパス。</td>
+              </tr>
+              <tr>
+                <th>Functional</th>
+                <td>USBデスクリプタ、標準要求、クラス固有動作、列挙、状態遷移など。</td>
+                <td>デスクリプタ不整合、Chapter 9要求への応答、サスペンド/レジューム。</td>
+              </tr>
+              <tr>
+                <th>Interoperability</th>
+                <td>既知の良品ホスト、デバイス、ハブ、ケーブルとの接続性。</td>
+                <td>特定チップセット、ハブ経由、長いケーブル、再接続時だけ失敗。</td>
+              </tr>
+              <tr>
+                <th>Type-C</th>
+                <td>CCピン、接続方向、Rp/Rd、VCONN、ケーブル、ロール判定など。</td>
+                <td>CC抵抗値、向き反転、デッドバッテリ、電子マーカー付きケーブル。</td>
+              </tr>
+              <tr>
+                <th>USB PD</th>
+                <td>PDメッセージ、電源契約、電圧/電流、ロールスワップ、EPR/SPRなど。</td>
+                <td>電源能力広告、異常時の保護、FRS、ケーブル能力との整合。</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <section>
+        <h2>USB 2.0で見ること</h2>
+        <p>USB-IFのUSB 2.0試験情報では、Compliance Programの主な領域としてFunctional、Electrical、Interoperabilityが示されています。FunctionalではUSB30CVなどのツールで標準要求やクラス試験を確認し、Electricalでは物理層の信号品質を測り、Interoperabilityでは既知の良品USB製品との相互接続性を確認します。</p>
+        <p>USB 2.0 High-Speedでは、D+ / D-の差動配線、インピーダンス、スタブ、ESD保護部品、コネクタ周辺のレイアウトが波形に効きます。Full-Speedだけの製品でも、デスクリプタやサスペンド電流などで落ちることがあります。</p>
+      </section>
+
+      <section>
+        <h2>USB Type-C / USB PDで見ること</h2>
+        <p>Type-Cでは、従来のUSB信号だけでなく、コネクタの向き、CCピン、電源ロール、ケーブル検出、VCONN、Alternate Modeなどが増えます。USB PD対応製品では、PDメッセージ、電源契約、Source/Sink動作、保護動作も試験対象になります。</p>
+        <p>USB-IFのType-Cページでは、Type-C Functional Test Specification、Type-C/PD Source Power Requirements、USB PD Compliance Test Specificationなどが挙げられています。PD capable製品では、PD CTSのPhysical Layer、Protocol、Power Supplyの各セクションが関係します。</p>
+      </section>
+
+      <section>
+        <h2>認証までの流れ</h2>
+        <ol class="steps">
+          <li><span>対象仕様を決める</span>USB 2.0、USB 3.2、USB4、Type-C、USB PD、ケーブル、ハブなど、製品が主張する機能を明確にする。</li>
+          <li><span>試験マトリクスを確認する</span>対象製品タイプに必要な試験項目、ツール、治具、認定機器を確認する。</li>
+          <li><span>社内で事前評価する</span>波形、デスクリプタ、PDログ、電源シーケンス、ケーブル組み合わせを量産前に潰す。</li>
+          <li><span>USB-IFへ製品登録する</span>製品情報と必要資料を登録し、試験可能なAuthorized Independent Test Labを選ぶ。</li>
+          <li><span>試験所またはWorkshopで試験する</span>認定試験所、USB-IF Sponsored Compliance Workshop、PILなどのルートを使う。</li>
+          <li><span>USB-IFレビューを受ける</span>試験データがレビューされ、合格すると認証・リスト掲載・ロゴ利用へ進む。</li>
+        </ol>
+      </section>
+
+      <section>
+        <h2>認証ルート</h2>
+        <p>USB-IFは、製品認証のルートとして、Compliance Workshop、Authorized Independent Test Lab、Qualification by Similarity Program、Platform Interoperability Lab、OEM Arrangementsを挙げています。</p>
+        <p>初回製品や新規設計では、認定試験所での正式試験が基本になります。既存認証品と非常に近い派生品なら、SimilarityやOEMの仕組みを検討できる場合があります。ただし、どこまでが「重要な差分」かは慎重に判断され、最終的にはUSB-IF側の判断が関わります。</p>
+      </section>
+
+      <section>
+        <h2>設計段階の注意点</h2>
+        <ul>
+          <li>USBロゴを使うなら、認証とUSB-IF Trademark License Agreementが必要になる。</li>
+          <li>USB-IF認証を目指す製品では、USB-IF認証済みコネクタを使う必要がある。</li>
+          <li>Type-Cは「コネクタをType-Cにしただけ」では済まず、CC制御と電源動作が重要。</li>
+          <li>PDはプロトコルだけでなく、電源の立ち上がり、保護、電圧精度、ケーブル能力も見る。</li>
+          <li>ESD保護部品やコモンモードチョークは、保護には効くが信号品質を悪化させることがある。</li>
+          <li>試験治具、オシロスコープ、プロトコルアナライザ、PDテスタの準備に時間がかかる。</li>
+          <li>量産版と試験サンプルの差分が大きいと、再試験や認証取り消しのリスクがある。</li>
+        </ul>
+      </section>
+
+      <section>
+        <h2>社内プリチェック</h2>
+        <p>正式試験の前に、次のような確認をしておくと手戻りを減らせます。</p>
+        <pre><code>USB 2.0/3.x:
+- 差動インピーダンスと配線長
+- アイパターン、ジッタ、振幅
+- デスクリプタとVID/PID
+- サスペンド/レジューム
+- 複数ホスト・ハブ・ケーブルでの接続
+
+USB Type-C/PD:
+- CC抵抗、向き反転、VCONN
+- Source/Sink/DRPのロール動作
+- PDメッセージログ
+- 電源契約後の電圧・電流
+- 異常時の保護動作</code></pre>
+      </section>
+
+      <section>
+        <h2>Summary</h2>
+        <p>USBのコンプライアンステストは、USB製品が仕様どおりに動き、他社製品とも安全に接続できることを確認する試験です。USB 2.0では主に機能、電気、相互接続性を見ます。Type-CやUSB PDでは、CC、電源ロール、ケーブル、PDプロトコル、電源品質まで範囲が広がります。ロゴ利用や公式認証を目指すなら、USB-IFの最新Compliance Updates、試験マトリクス、認定試験所の要件を早い段階で確認することが重要です。</p>
+      </section>
+
+      <section>
+        <h2>References</h2>
+        <ul>
+          <li><a href="https://www.usb.org/compliance">USB-IF - Compliance</a></li>
+          <li><a href="https://www.usb.org/usb2">USB-IF - USB 2.0 Compliance</a></li>
+          <li><a href="https://www.usb.org/usbc">USB-IF - USB Type-C and USB Power Delivery Testing</a></li>
+          <li><a href="https://www.usb.org/compliancetools">USB-IF - Compliance Tools</a></li>
+          <li><a href="https://www.usb.org/labs">USB-IF - Independent Test Labs</a></li>
+          <li><a href="https://www.usb.org/products">USB-IF - Certified Product Search</a></li>
+        </ul>
+      </section>
+    </main>
+  </body>
+</html>
